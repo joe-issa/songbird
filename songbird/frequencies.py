@@ -1,52 +1,52 @@
-#Functions to return 
+# -*- coding: utf-8 -*-
+"""
+Return scale and chords frequencies
 
-freq = np.zeros(24, dtype=float)
-A_calib = 440 #Hz
-for i in range(0,24,1):
-  freq[i] = A_calib*(2**((i-21)/12))
+@author: Joe Issa
+"""
+#
 
-  def Major(tonic="C"):
-  skips = [0,2,4,5,7,9,11,12]
-  root_note_index = index_in_keyboard(tonic)
-  scale = np.zeros(len(skips)+1, dtype=float)
-  for i in range(len(skips)):
-   scale[i] = freq[root_note_index+skips[i]]
-  return scale
+import numpy as np
 
-  def Minor(tonic="C"):
-  skips = [0,2,3,5,7,8,10,12]
-  root_note_index = index_in_keyboard(tonic)
-  scale = np.zeros(len(skips)+1, dtype=float)
-  for i in range(len(skips)):
-   scale[i] = freq[root_note_index+skips[i]]
-  return scale
-  
-  def MajorPenta(tonic="C"):
-  skips = [0,2,4,7,9,12]
-  root_note_index = index_in_keyboard(tonic)
-  scale = np.zeros(len(skips)+1, dtype=float)
-  for i in range(len(skips)):
-   scale[i] = freq[root_note_index+skips[i]]
-  return scale
+freq = np.zeros(36, dtype=float)
+A_calib = 880 #Hz
+for i in range(0,36,1):
+    freq[i] = A_calib*(2**((i-21)/12))
 
-  def MinorPenta(tonic="C"):
-  skips = [0,3,5,7,10,12]
-  root_note_index = index_in_keyboard(tonic)
-  scale = np.zeros(len(skips)+1, dtype=float)
-  for i in range(len(skips)):
-   scale[i] = freq[root_note_index+skips[i]]
-  return scale
+data_scale = {
+        "Major": [0,2,4,5,7,9,11,12],
+        "Minor": [0,2,3,5,7,8,10,12],
+        "MajorPenta": [0,2,4,7,9,12],
+        "MinorPenta": [0,3,5,7,10,12],
+        "Egyptian": [0,2,5,7,10,12]
+        }
 
-  def Egyptian(tonic="C"):
-  skips = [0,2,5,7,10,12]
-  root_note_index = index_in_keyboard(tonic)
-  scale = np.zeros(len(skips)+1, dtype=float)
-  for i in range(len(skips)):
-   scale[i] = freq[root_note_index+skips[i]]
-  return scale
+data_chords = {
+        "Major": [0,2,4,5,7,9,11,12,14,16,17,19,21,23,24],
+        "Minor": [0,2,3,5,7,8,10,12,14,15,17,19,20,22,24],
+        "MajorPenta": [0,2,4,7,9,12,14,16,19,21,24],
+        "MinorPenta": [0,3,5,7,10,12,15,17,19,22,24],
+        "Egyptian": [0,2,5,7,10,12,14,17,19,22,24]
+        }
 
-  def _index_in_keyboard(num):
-  switch={
+def Scale(type='Major', tonic='C'):
+    skips = data_scale[type]
+    root_note_index = _index_in_keyboard(tonic)
+    scale = np.zeros(len(skips)+1, dtype=float)
+    for i in range(len(skips)):
+        scale[i] = freq[root_note_index+skips[i]]
+    return scale
+
+def Chords(type='Major', tonic='C'):
+    skips = data_chords[type]
+    root_note_index = _index_in_keyboard(tonic)
+    chords = np.zeros((len(data_scale[type])+1, 3), dtype=float)
+    for i in range(len(data_scale[type])):
+        chords[i,:] = [freq[root_note_index+skips[i]], freq[root_note_index+skips[i+2]], freq[root_note_index+skips[i+4]] ]
+    return chords/2 #Divide by to bring down an octave
+
+def _index_in_keyboard(num):
+    switch = {
     "C":0,
     "C#":1,
     "D":2,
@@ -64,4 +64,4 @@ for i in range(0,24,1):
     "Bb":10,
     "B":11,
     }
-  return switch.get(num,"Invalid Input")
+    return switch.get(num,"Invalid Input")
